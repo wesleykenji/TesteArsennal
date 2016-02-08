@@ -1,4 +1,4 @@
-**Este projeto consiste de uma solução utilizando a linguagem java e como banco de dados o mongo db. Banco diferente do qual estou habituado. Pelo quesito criatividade decidi aplicar uma solução que fosse simples e que, pra mim, fosse diferente e desafiador.**
+**Este projeto consiste de uma solução utilizando a linguagem JAVA e como banco de dados o MongoDB. Banco diferente do qual estou habituado. Pelo quesito criatividade decidi aplicar uma solução que fosse simples e que, pra mim, fosse diferente e desafiador.**
 
 As Queries Usadas para as etapas de relatório são as seguintes:
 
