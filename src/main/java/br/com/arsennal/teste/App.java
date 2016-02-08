@@ -20,46 +20,93 @@ import java.util.Scanner;
  *
  */
 public class App {
-    public static void main( String[] args ) {
+
+
+    public static void main(String[] args) {
         boolean redirecionaFluxo = true;
 
-        System.out.println("=======     ATM    ==========");
-        while(redirecionaFluxo) {
-            //receber saque
-            System.out.println("Digite o valor do saque: ");
+        while (redirecionaFluxo){
+            System.out.println("Digite a opção desejada: ");
+            System.out.println("1 - Saque ");
+            System.out.println("2 - Listar todas as transações em ordem decrescente");
+            System.out.println("3 - Quantidade de cédulas retiradas");
+            System.out.println("4 - Média de todos os valores sacados");
+            System.out.println("5 - Sair");
+
             Scanner scanner = new Scanner(System.in);
-            Integer valor = scanner.nextInt();
+            Integer opcao = scanner.nextInt();
+            switch (opcao){
+                case 1: {
+                    efetuarSaque();
+                    break;
+                }
 
-            //validar regras sobre valor de saque
-            ValidacoesDeSaque validacoesDeSaque = new ValidacoesDeSaque();
-            try {
-                validacoesDeSaque.validarRegra(valor);
-            } catch (SaqueInvalidoException ex) {
-                System.out.println(ex.getMessage());
-                continue;
+                case 2: {
+                    listarTodasAsTransacoes();
+                    break;
+                }
+
+                case 3: {
+                    listarQuantidadeDeCedulasRetiradas();
+                    break;
+                }
+
+                case 4: {
+                    obterMediaDoValorSacado();
+                    break;
+                }
+
+                case 5: {
+                    redirecionaFluxo = false;
+                    System.exit(0);
+                    break;
+                }
             }
+        }
+    }
 
-            //liberar menor quantidade de cedulas possiveis
-            DispensadorDeCedulas dispensadorDeCedulas = new DispensadorDeCedulas(valor);
-            SaqueBuilder saqueBuilder = dispensadorDeCedulas.obtemResultadoSaque();
+    private static void obterMediaDoValorSacado() {
+        TransacaoService transacaoService = TransacaoFactory.getInstance();
+        Integer media = transacaoService.obterMediaDoValorSacado();
+        System.out.println(media);
+    }
 
-            Transacao transacao = TransacaoBuilder.construirTransacaoDeSaque(saqueBuilder);
-            TransacaoService transacaoService = TransacaoFactory.getInstance();
+    private static void listarQuantidadeDeCedulasRetiradas() {
+        TransacaoService transacaoService = TransacaoFactory.getInstance();
+        Map<Cedulas, Integer> todasCedulas = transacaoService.obterQtdTotalDeCedulasSacadas();
+        System.out.println(todasCedulas);
+    }
 
-            transacaoService.inserirTransacao(transacao);
+    private static void listarTodasAsTransacoes() {
+        TransacaoService transacaoService = TransacaoFactory.getInstance();
+        List<Transacao> transacoes = transacaoService.listarTransacoesPorDataDecrescente(TipoOperacao.SAQUE);
+        printTransacoes(transacoes);
+    }
 
-            List<Transacao> transacoes = transacaoService.listarTransacoesPorDataDecrescente(TipoOperacao.SAQUE);
-            Map<Cedulas, Integer> todasCedulas = transacaoService.obterQtdTotalDeCedulasSacadas();
-            System.out.println(todasCedulas);
+    private static void efetuarSaque() {
+        //receber saque
+        System.out.println("Digite o valor do saque: ");
+        Scanner scanner = new Scanner(System.in);
+        Integer valor = scanner.nextInt();
 
-            Integer media = transacaoService.obterMediaDoValorSacado();
-            System.out.println(media);
-            //printTransacoes(transacoes);
-//            transacaoService.
-            // inserir transacoes de saque com a qtd de cedulas entregues, data e hora da transacao
-            redirecionaFluxo = false;
+        //validar regras sobre valor de saque
+        ValidacoesDeSaque validacoesDeSaque = new ValidacoesDeSaque();
+        try {
+            validacoesDeSaque.validarRegra(valor);
+        } catch (SaqueInvalidoException ex) {
+            System.out.println(ex.getMessage());
+            return;
         }
 
+        //liberar menor quantidade de cedulas possiveis
+        DispensadorDeCedulas dispensadorDeCedulas = new DispensadorDeCedulas(valor);
+        SaqueBuilder saqueBuilder = dispensadorDeCedulas.obtemResultadoSaque();
+        Transacao transacao = TransacaoBuilder.construirTransacaoDeSaque(saqueBuilder);
+        TransacaoService transacaoService = TransacaoFactory.getInstance();
+
+        transacaoService.inserirTransacao(transacao);
+
+        System.out.println("Transação de Saque efetuada com sucesso! ");
     }
 
     private static void printTransacoes(List<Transacao> transacoes) {
@@ -75,4 +122,47 @@ public class App {
 
         System.out.println("================================================================");
     }
+//    public static void main( String[] args ) {
+//        boolean redirecionaFluxo = true;
+//
+//        System.out.println("=======     ATM    ==========");
+//        while(redirecionaFluxo) {
+//            //receber saque
+//            System.out.println("Digite o valor do saque: ");
+//            Scanner scanner = new Scanner(System.in);
+//            Integer valor = scanner.nextInt();
+//
+//            //validar regras sobre valor de saque
+//            ValidacoesDeSaque validacoesDeSaque = new ValidacoesDeSaque();
+//            try {
+//                validacoesDeSaque.validarRegra(valor);
+//            } catch (SaqueInvalidoException ex) {
+//                System.out.println(ex.getMessage());
+//                continue;
+//            }
+//
+//            //liberar menor quantidade de cedulas possiveis
+//            DispensadorDeCedulas dispensadorDeCedulas = new DispensadorDeCedulas(valor);
+//            SaqueBuilder saqueBuilder = dispensadorDeCedulas.obtemResultadoSaque();
+//
+//            Transacao transacao = TransacaoBuilder.construirTransacaoDeSaque(saqueBuilder);
+//            TransacaoService transacaoService = TransacaoFactory.getInstance();
+//
+//            transacaoService.inserirTransacao(transacao);
+//
+//            List<Transacao> transacoes = transacaoService.listarTransacoesPorDataDecrescente(TipoOperacao.SAQUE);
+//            printTransacoes(transacoes);
+//            Map<Cedulas, Integer> todasCedulas = transacaoService.obterQtdTotalDeCedulasSacadas();
+//            System.out.println(todasCedulas);
+//
+//            Integer media = transacaoService.obterMediaDoValorSacado();
+//            System.out.println(media);
+//            //printTransacoes(transacoes);
+////            transacaoService.
+//            // inserir transacoes de saque com a qtd de cedulas entregues, data e hora da transacao
+//            redirecionaFluxo = false;
+//        }
+//
+//    }
+
 }

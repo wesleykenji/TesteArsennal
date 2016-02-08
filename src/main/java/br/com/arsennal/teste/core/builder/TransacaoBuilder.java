@@ -48,34 +48,4 @@ public class TransacaoBuilder {
         transacao.setSaque(saque.buildSaque());
         return transacao;
     }
-
-    public static Transacao construirCedulasPorMapa(Map map) {
-
-        Transacao transacao = new Transacao();
-        Map<Cedulas, Integer> totalCedulas = new HashMap<>();
-        SaqueBuilder saque = new SaqueBuilder(0);
-
-        DBObject dbObject = (DBObject) map.get("notas");
-        Map mapCedulas = dbObject.toMap();
-
-        for (Object key : mapCedulas.keySet()) {
-
-            Cedulas chave = Cedulas.valueOf((String) key);
-            Integer valorOriginal = (Integer) mapCedulas.get(key);
-
-            if(totalCedulas.containsKey(chave)){
-                Integer temporario = totalCedulas.get(chave);
-                temporario += valorOriginal;
-                totalCedulas.put(chave, temporario);
-            } else {
-                totalCedulas.put(chave, valorOriginal);
-            }
-
-            saque.addCedulas(totalCedulas.get(chave), chave);
-        }
-
-        transacao.setSaque(saque.buildSaque());
-
-        return transacao;
-    }
 }
